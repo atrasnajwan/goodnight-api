@@ -2,8 +2,24 @@ class SleepRecordsController < ApplicationController
     before_action :authenticate_user
 
     def index
+        sort_by = params[:sort_by] || "clocked_in_at"
+        direction = params[:direction] == "desc" ? "desc" : "asc"
+
+        # Map duration to duration_hours
+        sort_by = "duration_hours" if sort_by == "duration"
+
+        # Validate the sort_by parameter
+        unless [ "clocked_in_at", "clocked_out_at", "duration_hours" ].include?(sort_by)
+            render json: {
+                message: "Invalid sort_by parameter",
+                error: "Only clocked_in_at, clocked_out_at, and duration are allowed"
+              }, status: :unprocessable_content
+            return
+        end
+
+        query = current_user.sleep_records.order("#{sort_by} #{direction}")
         pagination, sleep_records = pagy(
-                                        current_user.sleep_records.order(created_at: :desc),
+                                        query,
                                         limit: params[:per_page] || 10,
                                         page: params[:page] || 1
                                     )
