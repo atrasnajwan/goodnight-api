@@ -43,7 +43,7 @@ class UsersController < ApplicationController
             return render json: {
                     message: "Can not follow",
                     error: "You can not follow yourself"
-                }, status: :unprocessable_entity
+                }, status: :unprocessable_content
         end
 
         user_to_follow = User.find_by(id: user_id)
@@ -55,7 +55,7 @@ class UsersController < ApplicationController
                 return render json: {
                         message: "Already follow",
                         error: "You already follow this User"
-                    }, status: :unprocessable_entity
+                    }, status: :unprocessable_content
             end
 
             ::Following.create!(
@@ -79,7 +79,7 @@ class UsersController < ApplicationController
                 return render json: {
                         message: "Can not Unfollow",
                         error: "You never follow this User"
-                    }, status: :unprocessable_entity
+                    }, status: :unprocessable_content
             end
 
             following_relationship.destroy # delete relationship

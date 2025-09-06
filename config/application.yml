@@ -1,6 +1,9 @@
 development:
   DATABASE_URL: postgres://postgres@localhost:5432/goodnight_api_development
 
+test:
+  DATABASE_URL: postgres://postgres@localhost:5432/goodnight_api_test
+
 staging:
   DATABASE_URL: postgres://user:password@staging.example.com:5432/goodnight_api_staging
 
