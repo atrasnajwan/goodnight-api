@@ -7,6 +7,6 @@ class CreateFollowings < ActiveRecord::Migration[8.0]
       t.timestamps
     end
     # index to make sure no duplicate follower/following user
-    add_index :followings, [:followed_id, :follower_id], unique: true
+    add_index :followings, [ :followed_id, :follower_id ], unique: true
   end
 end
