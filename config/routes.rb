@@ -15,4 +15,14 @@ Rails.application.routes.draw do
       delete "unfollow"
     end
   end
+
+  # /sleep_records
+  resources :sleep_records, only: [ :index ]
+
+  namespace :sleep_records do
+    # /sleep_records/clock_in
+    post "clock_in"
+    # /sleep_records/clock_out
+    patch "clock_out"
+  end
 end
