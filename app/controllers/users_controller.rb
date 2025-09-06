@@ -70,5 +70,23 @@ class UsersController < ApplicationController
     end
 
     def unfollow
+        user_to_unfollow = User.find_by(id: params[:user_id])
+
+        if user_to_unfollow.present?
+            following_relationship = current_user.following_relationships.find_by(followed: user_to_unfollow)
+
+            unless following_relationship
+                return render json: {
+                        message: "Can not Unfollow",
+                        error: "You never follow this User"
+                    }, status: :unprocessable_entity
+            end
+
+            following_relationship.destroy # delete relationship
+
+            head :no_content
+        else
+            render json: { error: "User not found" }, status: :not_found # not_found == http status code 404
+        end
     end
 end
