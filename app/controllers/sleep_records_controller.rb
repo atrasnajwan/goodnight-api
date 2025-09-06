@@ -9,7 +9,7 @@ class SleepRecordsController < ApplicationController
                                     )
 
         render json: {
-            data: sleep_records,
+            data: ActiveModelSerializers::SerializableResource.new(sleep_records, each_serializer: SleepRecordSerializer),
             meta: pagination_meta(pagination)
         }
     end

@@ -5,7 +5,7 @@ class UsersController < ApplicationController
         pagination, users = pagy(User, limit: params[:per_page] || 10, page: params[:page] || 1)
 
         render json: {
-            data: users,
+            data: ActiveModelSerializers::SerializableResource.new(users, each_serializer: UserSerializer),
             meta: pagination_meta(pagination)
         }
     end
