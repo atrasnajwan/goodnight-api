@@ -17,11 +17,11 @@ dave = User.find_by(name: "Dave Mustain")
 
 pairs = [
     # follower, followed
-    [alice, bryan],
-    [alice, chad],
-    [bryan, alice],
-    [bryan, dave],
-    [chad, alice]
+    [ alice, bryan ],
+    [ alice, chad ],
+    [ bryan, alice ],
+    [ bryan, dave ],
+    [ chad, alice ]
 ]
 
 pairs.each do |follower, followed|

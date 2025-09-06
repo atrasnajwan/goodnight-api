@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_06_054034) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_06_201353) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,7 +32,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_06_054034) do
     t.datetime "clocked_out_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "duration_hours", precision: 10, scale: 2
     t.index ["clocked_in_at"], name: "index_sleep_records_on_clocked_in_at"
+    t.index ["clocked_out_at"], name: "index_sleep_records_on_clocked_out_at"
+    t.index ["duration_hours"], name: "index_sleep_records_on_duration_hours", where: "(clocked_out_at IS NOT NULL)"
+    t.index ["user_id", "clocked_in_at"], name: "index_sleep_records_on_user_id_and_clocked_in_at"
+    t.index ["user_id", "clocked_out_at"], name: "index_sleep_records_on_user_id_and_clocked_out_at"
+    t.index ["user_id", "duration_hours"], name: "index_sleep_records_on_user_id_and_duration_hours", where: "(clocked_out_at IS NOT NULL)"
     t.index ["user_id"], name: "index_sleep_records_on_user_id"
   end
 
@@ -40,6 +46,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_06_054034) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_users_on_name"
   end
 
   add_foreign_key "followings", "users", column: "followed_id"
