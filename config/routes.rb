@@ -9,6 +9,10 @@ Rails.application.routes.draw do
       get "followings"
       # GET /users/followers
       get "followers"
+      # POST /users/follow
+      post "follow"
+      # DEL /users/unfollow
+      delete "unfollow"
     end
   end
 end
