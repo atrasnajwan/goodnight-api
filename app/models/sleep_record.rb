@@ -14,7 +14,6 @@ class SleepRecord < ApplicationRecord
     def calculate_sleep_duration
         return if clocked_in_at.nil? || clocked_out_at.nil?
 
-        # Calculate duration in a background job
-        CalculateSleepDurationJob.perform_later(self.id)
+        self.duration_hours = ((self.clocked_out_at - self.clocked_in_at) / 1.hour).round(2)
     end
 end
