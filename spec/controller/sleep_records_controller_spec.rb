@@ -199,7 +199,7 @@ describe 'GET /sleep_records/followings' do
 
   context "when authorized and user has following sleep records" do
     let(:following_user) { create(:user) }
-    let!(:sleep_record) { create(:sleep_record, user: following_user, clocked_out_at: Time.now + 1.hours) }
+    let!(:sleep_record) { create(:sleep_record, user: following_user, duration_hours: 1.hours, clocked_out_at: Time.now + 1.hours) }
 
     before do
       # follow someone
@@ -217,20 +217,20 @@ describe 'GET /sleep_records/followings' do
       expect(response_data['meta']).to be_present
     end
 
-    it "sorts by clocked_in_at in ascending order by default" do
-      create_list(:sleep_record, 3, user: following_user, clocked_out_at: Time.now + 1.hours)
+    it "sorts by duration in ascending order by default" do
+      create_list(:sleep_record, 3, user: following_user, duration_hours: 1.hours, clocked_out_at: Time.now + 1.hours)
 
       get "/sleep_records/followings", headers: headers
       response_data = JSON.parse(response.body)
       sorted_ids = response_data['data'].map { |record| record['id'] }
 
-      expect(sorted_ids).to eq(following_user.sleep_records.order(clocked_in_at: :asc).pluck(:id))
+      expect(sorted_ids).to eq(following_user.sleep_records.order(duration_hours: :asc).pluck(:id))
     end
 
     it "sorts by clocked_out_at in descending order" do
       hours = 1
       while hours <= 3
-        create(:sleep_record, user: following_user, clocked_out_at: Time.now + hours.hours)
+        create(:sleep_record, user: following_user, duration_hours: hours.hours, clocked_out_at: Time.now + hours.hours)
         hours += 1
       end
 
@@ -242,14 +242,14 @@ describe 'GET /sleep_records/followings' do
     end
 
     it "sorts by duration" do
-      sleep_record1 = create(:sleep_record, user: following_user, clocked_out_at: Time.now + 5.hours)
-      sleep_record2 = create(:sleep_record, user: following_user, clocked_out_at: Time.now + 3.hours)
+      sleep_record1 = create(:sleep_record, user: following_user, duration_hours: 5.hours, clocked_out_at: Time.now + 5.hours)
+      sleep_record2 = create(:sleep_record, user: following_user, duration_hours: 3.hours, clocked_out_at: Time.now + 3.hours)
 
-      get "/sleep_records/followings", headers: headers, params: { sort_by: 'duration', direction: 'asc' }
+      get "/sleep_records/followings", headers: headers, params: { sort_by: 'duration', direction: 'desc', per_page: 2 }
       response_data = JSON.parse(response.body)
       sorted_ids = response_data['data'].map { |record| record['id'] }
 
-      expect(sorted_ids).to eq([ sleep_record.id, sleep_record2.id, sleep_record1.id ])
+      expect(sorted_ids).to eq([ sleep_record1.id, sleep_record2.id ])
     end
 
     it "returns an error for invalid sort_by parameter" do

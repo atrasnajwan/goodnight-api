@@ -2,7 +2,7 @@ class SleepRecordsController < ApplicationController
     before_action :authenticate_user
 
     def index
-        sort_by, direction, error_json = apply_sort_by()
+        sort_by, direction, error_json = apply_sort_by("clocked_in_at")
 
         return render json: error_json, status: :unprocessable_content unless error_json.empty?
 
@@ -62,7 +62,7 @@ class SleepRecordsController < ApplicationController
         # check params
         return render json: { error: "`from` must be before `to`" }, status: :unprocessable_content if from_date > to_date
 
-        sort_by, direction, error_json = apply_sort_by()
+        sort_by, direction, error_json = apply_sort_by("duration")
         return render json: error_json, status: :unprocessable_content unless error_json.empty?
 
         # get all following user_id
@@ -92,8 +92,8 @@ class SleepRecordsController < ApplicationController
         Date.parse(string_date) rescue nil
     end
 
-    def apply_sort_by
-        sort_by = params[:sort_by] || "clocked_in_at"
+    def apply_sort_by(default_sort)
+        sort_by = params[:sort_by] || default_sort
         direction = params[:direction] == "desc" ? "desc" : "asc"
 
         # Map duration to duration_hours

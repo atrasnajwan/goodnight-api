@@ -59,7 +59,7 @@ Represents a follower-followed relationship between users.
 **Indexes**:
 - `index_followings_on_followed_id` 
 - `index_followings_on_follower_id` 
-- `index_followings_on_followed_id_and_follower_id (unique)` 
+- `index_followings_on_followed_id_and_follower_id (unique)` -> prevent duplicate
 - `index_followings_on_followed_id_and_created_at` -> for sorting following user by `created_at`
 - `index_followings_on_follower_id_and_created_at` -> for sorting follower user by `created_at`
 
@@ -133,7 +133,7 @@ it will only show clocked_out sleep_records
     ```
     GET /sleep_records/followings?from=2025-08-01&to=2025-08ll-10
     ```
-    - Can be sorted by `clocked_in_at`, `clocked_out_at`, and `duration`, default sorting is `clocked_in_at`. Direction can be `desc` or `asc`
+    - Can be sorted by `clocked_in_at`, `clocked_out_at`, and `duration`, default sorting is `duration`. Direction can be `desc` or `asc`
      ```
     GET /sleep_records/followings?sort_by=duration&direction=desc
     ```
