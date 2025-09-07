@@ -12,6 +12,5 @@ class CreateSleepRecordPartitionJob < ApplicationJob
     Rails.logger.info "[Partition] ensured #{table_name}"
   rescue => e
     Rails.logger.error "[Partition] failed to create partition: #{e.class}: #{e.message}"
-    raise
   end
 end
