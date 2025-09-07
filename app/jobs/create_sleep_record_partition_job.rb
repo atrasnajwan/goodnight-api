@@ -1,4 +1,3 @@
-# app/jobs/create_sleep_record_partition_job.rb
 class CreateSleepRecordPartitionJob < ApplicationJob
   queue_as :default
 

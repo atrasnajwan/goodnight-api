@@ -33,9 +33,6 @@ Tracks when a user clocks in and out for sleep.
 | updated_at     | datetime | Last update time                         |
 
 **Indexes**:
-- `index_sleep_records_on_clocked_in_at` -> for sorting by `clocked_in_at`
-- `index_sleep_records_on_clocked_out_at` -> for sorting by `clocked_out_at`
-- `index_sleep_records_on_duration_hours` -> for sorting by `duration_hours` (only applied when `clocked_out_at` is not null)
 - `index_sleep_records_on_user_id_and_clocked_in_at` -> for sorting by `clocked_in_at` when showing sleep records for a specific user
 - `index_sleep_records_on_user_id_and_clocked_out_at` -> for sorting by `clocked_out_at` when showing sleep records for a specific user
 - `index_sleep_records_on_user_id_and_duration_hours` -> for sorting by `duration_hours` when showing sleep records for a specific user (only applied when `clocked_out_at` is not null)
@@ -82,7 +79,7 @@ Represents a follower-followed relationship between users.
 }
 ```
 ---
-**Body Resonse**
+**Body Response**
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTczMTc4NjB9.kQ62BprQyV6uNIdcBbupoq2qBs5QdDQbDWPYPGirYiE",
@@ -100,14 +97,16 @@ use `token` to access another endpoint
 | Method | Path                    | Description                                     |
 |--------|-------------------------|-------------------------------------------------|
 | GET    | `/users`                | List all users                                  |
-| POST   | `/users`                | Create a new user                               |
 | GET    | `/users/followings`     | Get the users that the current user is following |
 | GET    | `/users/followers`      | Get the users who are following the current user |
 | POST   | `/users/follow`     | Follow a user by `user_id`                            |
 | DELETE | `/users/unfollow`   | Unfollow a user by `user_id`                           |
 
 ---
-
+**Header**
+```
+  Authorization       Bearer `token`
+```
 ### Sleep Records
 
 | Method | Path                          | Description                                                          |
@@ -117,6 +116,10 @@ use `token` to access another endpoint
 | PATCH  | `/sleep_records/clock_out`    | Clock out from the current sleep record                              |
 | GET    | `/sleep_records/followings`   | Get sleep records of followings user, filtered by timeframe and can be sorted by `clocked_in_at`, `clocked_out_at`, and `duration` |
 ---
+**Header**
+```
+  Authorization       Bearer `token`
+```
 
 >Note:
 it will only show clocked_out sleep_records
@@ -150,6 +153,30 @@ rails db:create         # Create db, will follow the configuration on database.y
 rails db:migrate        # Runs migrations
 rails db:seed           # Generate seed data
 bin/bundle exec rspec   # Run RSpec 
+bin/bundle exec sidekiq # Run sidekiq for background job 
 
 rails s                 # Run the server (default: development)
 ```
+
+## Scalability and Performance Strategies
+
+### 1. Database Level
+
+- [x] Indexes: Compound indexes on `user_id` with `clocked_in_at`, `clocked_out_at`, and `duration_hours` to optimize filtering and sorting.
+- [x] Partitioning: `SleepRecords` are partitioned by date ranges (daily) to reduce table size per partition and speed up queries for recent data using `pg_party`
+- [x] Precomputed Duration: Sleep duration (`duration_hours`) is calculated and stored on `sleep_records` instead of being computed at query time.
+- [x] Efficient Queries: Joins for followings’ records are optimized with indexed lookups to avoid N+1 queries.
+
+### 2. Application Level
+- [x] Pagination: All listing endpoints support pagination to avoid large responses.
+- [x] Background Jobs: Creating new partition table is done by using Sidekiq workers.
+- [ ] Caching: most used endpoint
+
+### 3. Infrastructure Level
+
+- Horizontal Scaling
+  - [ ] Scale Rails API servers horizontally behind a load balancer.
+- Read Replicas
+  - [ ] Create PostgreSQL read replicas to distribute read-heavy traffic.
+- Connection Pooling
+  - [ ] Fine tune Rails connection pool to manage concurrency efficiently.

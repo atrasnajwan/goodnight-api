@@ -1,0 +1,6 @@
+:queues:
+  - default
+:cron:
+  daily_sleep_record_partition:
+    cron: "0 0 * * *"        # every day at midnight
+    class: "CreateSleepRecordPartitionJob"

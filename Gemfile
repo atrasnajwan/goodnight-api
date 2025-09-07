@@ -45,6 +45,9 @@ gem "active_model_serializers"
 # postgres partion
 gem "pg_party", "~> 1.9"
 
+gem "sidekiq", "~> 8.0"
+gem "sidekiq-cron"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
