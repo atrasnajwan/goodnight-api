@@ -9,7 +9,7 @@ class SleepRecord < ApplicationRecord
     before_save :calculate_sleep_duration, if: :clocked_out_at_changed?
 
     # daily partition
-    range_partition_by :clocked_in_at, strategy: :daily
+    range_partition_by :clocked_in_at
 
     private
     # set clocked_in_at to current time
