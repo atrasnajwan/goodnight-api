@@ -73,4 +73,25 @@ RSpec.configure do |config|
 
   # Include FactoryBot methods in specs
   config.include FactoryBot::Syntax::Methods
+
+  # for rspec works on partition table
+  config.before(:suite) do
+    ActiveRecord::Base.connection.execute <<~SQL
+      DO $$
+      DECLARE
+        d date := current_date - interval '1 days';
+      BEGIN
+        WHILE d <= current_date + interval '1 days' LOOP
+          EXECUTE format(
+            'CREATE TABLE IF NOT EXISTS sleep_records_%s PARTITION OF sleep_records
+             FOR VALUES FROM (%L) TO (%L)',
+            to_char(d, 'YYYYMMDD'),
+            d,
+            d + 1
+          );
+          d := d + interval '1 day';
+        END LOOP;
+      END$$;
+    SQL
+  end
 end

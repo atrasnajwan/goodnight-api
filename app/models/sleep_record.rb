@@ -1,9 +1,15 @@
 class SleepRecord < ApplicationRecord
+    include PgParty::Model
+
+    self.primary_key = :id
     belongs_to :user
     before_create :set_clocked_in_at
 
     # callback before saving to db if clocked_out_at column changed
     before_save :calculate_sleep_duration, if: :clocked_out_at_changed?
+
+    # daily partition
+    range_partition_by :clocked_in_at, strategy: :daily
 
     private
     # set clocked_in_at to current time

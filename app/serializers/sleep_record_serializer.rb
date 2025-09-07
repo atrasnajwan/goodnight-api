@@ -1,5 +1,5 @@
 class SleepRecordSerializer < ActiveModel::Serializer
-    attributes :id, :clocked_in_at, :clocked_out_at
+    attributes :id, :clocked_in_at, :clocked_out_at, :duration
 
     def duration
         return if object.duration_hours.nil?

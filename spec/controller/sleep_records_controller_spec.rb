@@ -80,7 +80,7 @@ describe 'PATCH /sleep_records/clock_out' do
 
   context "when the user have an active sleep record" do
     before do
-      create(:sleep_record, user: user, clocked_in_at: Time.now, clocked_out_at: nil)
+      create(:sleep_record, user: user)
     end
 
     it 'update clock out time and returns a success' do
